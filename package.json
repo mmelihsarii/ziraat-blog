@@ -1,27 +1,68 @@
 {
   "name": "ziraat-blog",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "apps/site",
+    "apps/admin"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "concurrently -n site,admin -c green,cyan \"npm:dev:site\" \"npm:dev:admin\"",
+    "dev:site": "npm run dev --workspace @ziraat/site -- --port 3000",
+    "dev:admin": "npm run dev --workspace @ziraat/admin -- --port 3001",
+    "build": "npm run build:site && npm run build:admin",
+    "build:site": "npm run build --workspace @ziraat/site",
+    "build:admin": "npm run build --workspace @ziraat/admin",
+    "start:site": "npm run start --workspace @ziraat/site -- --port 3000",
+    "start:admin": "npm run start --workspace @ziraat/admin -- --port 3001",
+    "lint": "eslint",
+    "typecheck": "node scripts/clean-next.mjs && npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "release:check": "node scripts/check-release.mjs && npm run check && npm run test:e2e && npm audit --omit=dev",
+    "handoff:check": "node scripts/check-handoff.mjs"
   },
   "dependencies": {
-    "next": "16.2.10",
+    "@hookform/resolvers": "^5.4.0",
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.110.3",
+    "@tiptap/extension-character-count": "3.31.3",
+    "@tiptap/extension-image": "3.31.3",
+    "@tiptap/extension-link": "3.31.3",
+    "@tiptap/extension-placeholder": "3.31.3",
+    "@tiptap/extension-youtube": "3.31.3",
+    "@tiptap/react": "3.31.3",
+    "@tiptap/starter-kit": "3.31.3",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.42.2",
+    "lucide-react": "1.31.0",
+    "next": "16.3.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.80.0",
+    "react-hot-toast": "^2.6.0",
+    "react-icons": "^5.7.0",
+    "sanitize-html": "^2.17.7",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/sanitize-html": "^2.16.1",
     "babel-plugin-react-compiler": "1.0.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "16.3.6",
+    "jsdom": "^29.1.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.11"
   }
 }

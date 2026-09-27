@@ -1,0 +1,234 @@
+/*
+ * Dosyanın görevi: Uygulamanın ortak tasarım değişkenlerini, editör stillerini ve makale görünümünü tanımlar.
+ * Kullanıldığı yerler: Next.js dosya tabanlı rota sistemi tarafından doğrudan yüklenir.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Sansita:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+/* Tiptap Editor Styles */
+.tiptap {
+  outline: none;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap a {
+  color: #10b981;
+  text-decoration: underline;
+}
+
+.tiptap a:hover {
+  color: #059669;
+}
+
+.tiptap ul,
+.tiptap ol {
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.tiptap ul {
+  list-style-type: disc;
+}
+
+.tiptap ol {
+  list-style-type: decimal;
+}
+
+.tiptap li {
+  margin: 0.5rem 0;
+}
+
+.tiptap blockquote {
+  border-left: 4px solid #e5e7eb;
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: #6b7280;
+}
+
+.tiptap code {
+  background-color: #f3f4f6;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.25rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+}
+
+.tiptap pre {
+  background-color: #1f2937;
+  border-radius: 0.5rem;
+  color: #f9fafb;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 1rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+
+.tiptap pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.tiptap h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 1.5rem 0 1rem;
+}
+
+.tiptap h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 1.25rem 0 0.75rem;
+}
+
+.tiptap h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+}
+
+.tiptap img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+.tiptap hr {
+  border: none;
+  border-top: 2px solid #e5e7eb;
+  margin: 2rem 0;
+}
+
+/* Editör alanında tasarım diliyle uyumlu kaydırma çubuğu kullanılır. */
+.tiptap::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tiptap::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.tiptap::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.tiptap::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@theme {
+  --font-sans: "Poppins", sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-sansita: "Sansita", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+
+  --color-brand-purple: #7A65E1;
+  --color-brand-dark: #121416;
+  --color-brand-gray: #6C757D;
+
+  --animate-fade-in: fade-in 0.3s ease-in-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Herkese açık zengin metin çıktısı bu stillerden önce sunucuda zararlı içerikten arındırılır. */
+.article-content {
+  color: #262626;
+  font-size: 1.075rem;
+  line-height: 1.9;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.article-content > * + * {
+  margin-top: 1.35rem;
+}
+
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4 {
+  color: #121416;
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.25;
+  margin-top: 2.5rem;
+}
+
+.article-content h1 { font-size: 2.25rem; }
+.article-content h2 { font-size: 1.875rem; }
+.article-content h3 { font-size: 1.5rem; }
+.article-content h4 { font-size: 1.25rem; }
+
+.article-content ul,
+.article-content ol {
+  padding-left: 1.6rem;
+}
+
+.article-content ul { list-style: disc; }
+.article-content ol { list-style: decimal; }
+.article-content li + li { margin-top: 0.5rem; }
+
+.article-content a {
+  color: #059669;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.article-content blockquote {
+  border-left: 4px solid #10b981;
+  background: #f5f5f5;
+  color: #404040;
+  font-style: italic;
+  padding: 1.25rem 1.5rem;
+}
+
+.article-content img,
+.article-content iframe {
+  display: block;
+  max-width: 100%;
+  border-radius: 0.5rem;
+  margin: 2rem auto;
+}
+
+.article-content iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+}
+
+.article-content pre {
+  overflow-x: auto;
+  background: #171717;
+  color: #fafafa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .article-content { font-size: 1rem; }
+  .article-content h1 { font-size: 1.875rem; }
+  .article-content h2 { font-size: 1.5rem; }
+  .article-content h3 { font-size: 1.25rem; }
+}
