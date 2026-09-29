@@ -22,7 +22,7 @@ Supabase PostgreSQL + Auth + Storage
   public site + küçük client etkileşimleri
 
 Admin formu -> doğrulama -> RLS kontrollü service -> Supabase
-Public site -> aynı Supabase verisi -> en fazla 5 saniyelik CDN önbelleği
+Public site -> aynı Supabase verisi -> tek yenilemede güncel içerik
 ```
 
 ## Modül Sınırları
@@ -36,8 +36,8 @@ Public site -> aynı Supabase verisi -> en fazla 5 saniyelik CDN önbelleği
 
 ## Performans Kararları
 
-- Public sorgular sunucuda paralel çalışır ve beş dakika önbelleklenir.
-- İçerik değişiklikleri tüm siteyi kapatmadan `public-content` etiketiyle yenilenir.
+- Public sorgular sunucuda paralel çalışır ve yönetim değişikliklerini ilk yenilemede göstermek için eski yanıt önbelleğine alınmaz.
+- İçerik değişiklikleri ayrı deploy edilen ziyaretçi sitesinin bir sonraki isteğinde doğrudan Supabase'ten okunur.
 - Public sayfalara Supabase tarayıcı paketi ve admin state'i taşınmaz.
 - Next Image, AVIF/WebP, doğru `sizes`, lazy loading ve öncelikli hero/kapak stratejisi kullanılır.
 - Hero yedeği 1672x941 WebP ve yaklaşık 160 KB boyutundadır.

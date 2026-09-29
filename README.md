@@ -11,7 +11,7 @@ Ziraat mühendisi için hazırlanmış, public yayın sitesi ve güvenli yöneti
 - Onay bekleyen yorum, 1-5 puan, admin onay/red/silme akışı
 - Hero ve yazar profili yönetimi; Supabase Storage görsel yükleme
 - Supabase Auth, yönetici rolü, route koruması, RLS ve kolon düzeyinde e-posta gizliliği
-- Ayrı deploy edilen public/admin uygulamaları ve ortak Supabase verisini en geç 5 saniyede tazeleyen CDN önbelleği
+- Ayrı deploy edilen public/admin uygulamaları ve tek yenilemede güncel Supabase verisi
 - Yerel, optimize edilmiş hero yedeği; dış servis kesintisinde bozulmayan temel görünüm
 
 ## Gereksinimler
@@ -106,7 +106,7 @@ Detaylı teknik kararlar ve tamamlanma ölçütleri [`PROJECT-BRIEF.md`](./PROJE
 3. İki projede `NEXT_PUBLIC_SUPABASE_URL` ve `NEXT_PUBLIC_SUPABASE_ANON_KEY` birebir aynı Supabase projesine ait olmalıdır. Böylece makale, kategori, hero ve Hakkımda profili iki farklı domainde de bağlı kalır.
 4. `NEXT_PUBLIC_SITE_URL` ziyaretçi domaini, `NEXT_PUBLIC_ADMIN_URL` admin domaini olmalıdır.
 
-Ziyaretçi uygulaması ortak Supabase verisini en fazla 5 saniyelik CDN önbelleğiyle okur. Bu nedenle admin uygulaması farklı bir sağlayıcıda yayınlansa bile kayıtlar ek bir webhook veya domainler arası gizli anahtar gerektirmeden siteye yansır.
+Ziyaretçi uygulaması ortak Supabase verisini eski yanıt önbelleğine almadan okur. Bu nedenle admin uygulaması farklı bir sağlayıcıda yayınlansa bile kayıtlar ek bir webhook veya domainler arası gizli anahtar gerektirmeden ilk sayfa yenilemesinde siteye yansır.
 
 Supabase artımlı migration dosyasını çalıştırdıktan ve kök `.env.local` içine canlı değerleri koyduktan sonra `npm run release:check` komutu iki uygulamayı, testleri, tarayıcı akışlarını ve bağımlılıkları tek seferde doğrular.
 

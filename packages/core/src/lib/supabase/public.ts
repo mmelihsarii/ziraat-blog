@@ -1,5 +1,5 @@
 /**
- * Dosyanın görevi: Public veri isteğini kısa CDN önbelleği ve dış servis kesintilerine karşı zaman aşımıyla çalıştırır.
+ * Dosyanın görevi: Public veri isteğini güncel kayıt ve dış servis kesintilerine karşı zaman aşımıyla çalıştırır.
  * Kullanıldığı yerler: app/api/posts/[id]/view/route.ts, services/publicService.ts
  */
 import 'server-only';
@@ -7,11 +7,7 @@ import 'server-only';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
-type NextFetchInit = RequestInit & {
-  next?: { revalidate?: number };
-};
-
-/** Public veri isteğini kısa CDN önbelleği ve dış servis kesintilerine karşı zaman aşımıyla çalıştırır. */
+/** Public veri isteğini önbelleğe takılmadan ve dış servis kesintilerine karşı zaman aşımıyla çalıştırır. */
 function fetchPublicContent(input: RequestInfo | URL, init?: RequestInit) {
   // Dış servis kesintisinde sayfa uzun süre beyaz ekranda kalmadan güvenli boş/yedek içeriğe geçer.
   const timeout = AbortSignal.timeout(2500);
@@ -19,12 +15,12 @@ function fetchPublicContent(input: RequestInfo | URL, init?: RequestInit) {
   return fetch(input, {
     ...init,
     signal,
-    // İki ayrı deploy aynı veriyi kullanır; kısa CDN önbelleği değişiklikleri en geç 5 saniyede görünür kılar.
-    next: { revalidate: 5 },
-  } as NextFetchInit);
+    // Admin ve site ayrı deploy edildiği için eski-yanıtlı yeniden doğrulama kullanma; tek yenilemede güncel kaydı getir.
+    cache: 'no-store',
+  });
 }
 
-/** Public sorguları kimlik çerezi taşımadan, beş saniyelik Next.js önbelleğiyle çalıştırır. */
+/** Public sorguları kimlik çerezi ve eski veri önbelleği taşımadan çalıştırır. */
 export function createPublicClient() {
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

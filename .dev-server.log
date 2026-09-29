@@ -2,39 +2,37 @@
 > ziraat-blog@1.0.0 dev
 > concurrently -n site,admin -c green,cyan "npm:dev:site" "npm:dev:admin"
 
-[site] 
-[site] > ziraat-blog@1.0.0 dev:site
-[site] > npm run dev --workspace @ziraat/site -- --port 3000
-[site] 
 [admin] 
 [admin] > ziraat-blog@1.0.0 dev:admin
 [admin] > npm run dev --workspace @ziraat/admin -- --port 3001
 [admin] 
 [site] 
-[site] > @ziraat/site@1.0.0 dev
-[site] > next dev --port 3000
+[site] > ziraat-blog@1.0.0 dev:site
+[site] > npm run dev --workspace @ziraat/site -- --port 3000
 [site] 
 [admin] 
 [admin] > @ziraat/admin@1.0.0 dev
 [admin] > next dev --port 3001
 [admin] 
-[admin] ▲ Next.js 16.3.6 (Turbopack)
-[admin] - Local:         http://localhost:3001
-[admin] - Network:       http://172.18.160.1:3001
+[site] 
+[site] > @ziraat/site@1.0.0 dev
+[site] > next dev --port 3000
+[site] 
 [site] ▲ Next.js 16.3.6 (Turbopack)
 [site] - Local:         http://localhost:3000
-[admin] - Environments: .env.local
-[site] - Network:       http://172.18.160.1:3000
+[site] - Network:       http://172.26.192.1:3000
 [site] - Environments: .env.local
-[admin] ✓ Ready in 3.1s
-[site] ✓ Ready in 3.0s
-[site] ✓ Running next.config.ts took 373ms
-[admin] ✓ Running next.config.ts took 383ms
+[site] ✓ Ready in 1198ms
+[admin] ▲ Next.js 16.3.6 (Turbopack)
+[admin] - Local:         http://localhost:3001
+[admin] - Network:       http://172.26.192.1:3001
+[admin] - Environments: .env.local
+[admin] ✓ Ready in 1263ms
+[site] ✓ Running next.config.ts took 199ms
+[admin] ✓ Running next.config.ts took 123ms
 [site] 
 [admin] 
-[site] Published posts could not be loaded: TypeError: fetch failed
-[site] Categories could not be loaded: TypeError: fetch failed
-[site] Hero content could not be loaded: TypeError: fetch failed
-[site] About profile selection could not be loaded: TypeError: fetch failed
-[site]  GET / 200 in 9.2s (next.js: 740ms, application-code: 8.5s)
-[admin]  GET /login 200 in 1625ms (next.js: 281ms, proxy.ts: 608ms, application-code: 736ms)
+[site] ○ Compiling / ...
+[site]  GET / 200 in 10.0s (next.js: 5.4s, application-code: 4.6s)
+[admin] ○ Compiling /login ...
+[admin]  GET /login 200 in 4.2s (next.js: 3.6s, proxy.ts: 336ms, application-code: 296ms)

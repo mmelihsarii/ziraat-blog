@@ -5,7 +5,8 @@
 import type { MetadataRoute } from 'next';
 import { getPublishedPosts } from '@/services/publicService';
 
-export const revalidate = 3600;
+// Yeni yayınlanan makaleleri eski sitemap önbelleğine takılmadan listele.
+export const dynamic = 'force-dynamic';
 
 /** Sabit sayfalarla yayınlanmış makaleleri tek, güncel arama motoru haritasında birleştirir. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

@@ -35,6 +35,6 @@ export async function POST() {
     return NextResponse.json({ error: 'Profil yayinlanamadi.' }, { status: 500 });
   }
 
-  // Ziyaretçi uygulaması aynı Supabase kaydını en geç 5 saniye içinde yeniden okur.
-  return NextResponse.json({ published: true, refreshWithinSeconds: 5 });
+  // Ziyaretçi uygulaması bir sonraki sayfa isteğinde aynı Supabase kaydını doğrudan okur.
+  return NextResponse.json({ published: true });
 }
