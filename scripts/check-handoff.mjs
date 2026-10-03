@@ -44,6 +44,11 @@ if (!existsSync('supabase/migrations/20260907180000_release_hardening.sql')) {
   process.exitCode = 1;
 }
 
+if (!existsSync('supabase/migrations/20261003090000_gallery.sql')) {
+  console.error('Galeri migration dosyası bulunamadı.');
+  process.exitCode = 1;
+}
+
 if (!process.exitCode) {
   console.log(`${sourceFiles.length} kaynak dosyasının bakım notları ve teslim güvenliği doğrulandı.`);
 }

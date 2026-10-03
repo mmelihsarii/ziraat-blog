@@ -7,6 +7,7 @@ import { expect, test } from '@playwright/test';
 for (const [name, path] of [
   ['ana sayfa', '/'],
   ['makale arşivi', '/makaleler'],
+  ['galeri', '/galeri'],
   ['hakkımda', '/hakkimda'],
 ] as const) {
   test(`${name} ziyaretçiye açılır`, async ({ page }) => {
@@ -33,7 +34,9 @@ test('robots ve sitemap canlı rotaları üretir', async ({ request }) => {
 
   const sitemap = await request.get('/sitemap.xml');
   expect(sitemap.ok()).toBeTruthy();
-  expect(await sitemap.text()).toContain('<urlset');
+  const sitemapText = await sitemap.text();
+  expect(sitemapText).toContain('<urlset');
+  expect(sitemapText).toContain('/galeri');
 });
 
 test('site ve admin rotaları birbirinden fiziksel olarak ayrıdır', async ({ request }) => {

@@ -39,6 +39,7 @@ export default function Header({ onSearch, activeCategory = 'ALL', setActiveCate
   const navLinks = [
     { href: '/', label: 'Ana Sayfa' },
     { href: '/makaleler', label: 'Makaleler' },
+    { href: '/galeri', label: 'Galeri' },
     { href: '/hakkimda', label: 'Hakkımda' },
   ];
 

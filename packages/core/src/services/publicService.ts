@@ -6,7 +6,7 @@ import 'server-only';
 
 import { createPublicClient } from '@/lib/supabase/public';
 import type { Database } from '@/types/supabase';
-import type { AdminPost, Category, HeroContent, Post, Profile, PublicComment } from '@/types';
+import type { AdminPost, Category, GalleryItem, HeroContent, Post, Profile, PublicComment } from '@/types';
 
 type PostRow = Database['public']['Tables']['posts']['Row'];
 type PublicPostRow = PostRow & { category: Pick<Category, 'id' | 'name' | 'slug'> | null };
@@ -79,6 +79,27 @@ export async function getPublishedCategories(): Promise<Category[]> {
     return [];
   }
   return data;
+}
+
+/** Yalnız yayımlanmış galeri kayıtlarını yönetici sırasıyla getirir. */
+export async function getPublicGalleryItems(): Promise<GalleryItem[]> {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from('media')
+    .select('id, filename, url, bucket, mime_type, size, alt, description, poster_url, width, height, duration_seconds, published, sort_order, created_at, updated_at')
+    .eq('bucket', 'gallery')
+    .eq('published', true)
+    .order('sort_order', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(60);
+  if (error) {
+    console.warn('Gallery items could not be loaded:', error.message);
+    return [];
+  }
+  return data.map((item) => ({
+    ...item,
+    media_type: item.mime_type.startsWith('video/') ? 'video' as const : 'image' as const,
+  }));
 }
 
 /** Yönetilebilir hero kaydını getirir; erişilemezse tasarımın boş kalmaması için varsayılanı döndürür. */

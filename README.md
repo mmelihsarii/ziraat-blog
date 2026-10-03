@@ -10,6 +10,7 @@ Ziraat mühendisi için hazırlanmış, public yayın sitesi ve güvenli yöneti
 - SEO başlığı/açıklaması, etiketler, canonical URL, Open Graph, sitemap ve robots.txt
 - Onay bekleyen yorum, 1-5 puan, admin onay/red/silme akışı
 - Hero ve yazar profili yönetimi; Supabase Storage görsel yükleme
+- Fotoğraf/video galerisi; WebP görsel optimizasyonu, video kapakları ve özel oynatıcı
 - Supabase Auth, yönetici rolü, route koruması, RLS ve kolon düzeyinde e-posta gizliliği
 - Ayrı deploy edilen public/admin uygulamaları ve tek yenilemede güncel Supabase verisi
 - Yerel, optimize edilmiş hero yedeği; dış servis kesintisinde bozulmayan temel görünüm
@@ -105,6 +106,8 @@ Detaylı teknik kararlar ve tamamlanma ölçütleri [`PROJECT-BRIEF.md`](./PROJE
 2. Yönetim projesinin **Root Directory** değerini `apps/admin` yapın. [`apps/admin/.env.local.example`](./apps/admin/.env.local.example) içindeki değerleri ekleyin.
 3. İki projede `NEXT_PUBLIC_SUPABASE_URL` ve `NEXT_PUBLIC_SUPABASE_ANON_KEY` birebir aynı Supabase projesine ait olmalıdır. Böylece makale, kategori, hero ve Hakkımda profili iki farklı domainde de bağlı kalır.
 4. `NEXT_PUBLIC_SITE_URL` ziyaretçi domaini, `NEXT_PUBLIC_ADMIN_URL` admin domaini olmalıdır.
+
+Mevcut bir Supabase kurulumu galeri özelliğine yükseltilirken [`supabase/migrations/20261003090000_gallery.sql`](./supabase/migrations/20261003090000_gallery.sql) dosyası SQL Editor'da bir kez çalıştırılmalıdır.
 
 Ziyaretçi uygulaması ortak Supabase verisini eski yanıt önbelleğine almadan okur. Bu nedenle admin uygulaması farklı bir sağlayıcıda yayınlansa bile kayıtlar ek bir webhook veya domainler arası gizli anahtar gerektirmeden ilk sayfa yenilemesinde siteye yansır.
 

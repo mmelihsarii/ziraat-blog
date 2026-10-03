@@ -13,6 +13,7 @@ import {
   FileText, 
   MessageSquare,
   ImageIcon,
+  Images,
   UserRound,
   LogOut, 
   Menu, 
@@ -86,6 +87,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: '/dashboard/content/hero',
       label: 'Hero Yönetimi',
       icon: ImageIcon,
+    },
+    {
+      href: '/dashboard/gallery',
+      label: 'Galeri',
+      icon: Images,
     },
     {
       href: '/dashboard/profile',

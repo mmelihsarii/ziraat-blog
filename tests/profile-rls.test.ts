@@ -13,6 +13,7 @@ const second = '00000000-0000-4000-8000-000000000002';
 const reader = '00000000-0000-4000-8000-000000000003';
 const migration = readFileSync('supabase/migrations/20260907180000_release_hardening.sql', 'utf8');
 const cleanupMigration = readFileSync('supabase/migrations/20260926090000_remove_password_recovery.sql', 'utf8');
+const galleryMigration = readFileSync('supabase/migrations/20261003090000_gallery.sql', 'utf8');
 
 /** Supabase'in sağladığı kimlik/Storage iskeletini yerel test veritabanında kurar. */
 beforeAll(async () => {
@@ -36,6 +37,7 @@ beforeAll(async () => {
   await db.exec(baseline);
   await db.exec(migration);
   await db.exec(cleanupMigration);
+  await db.exec(galleryMigration);
   await db.exec(`
     INSERT INTO auth.users (id,email) VALUES
       ('${first}', 'first@test.invalid'), ('${second}', 'second@test.invalid'), ('${reader}', 'reader@test.invalid');
@@ -99,9 +101,20 @@ describe('Profil ve yayın RLS kuralları', () => {
     expect(table.rows[0].relation).toBeNull();
     expect(fn.rows[0].count).toBe(0);
   });
+  it('Yalnız yayınlanmış galeri kayıtlarını anonim ziyaretçiye açar', async () => {
+    await db.exec(`INSERT INTO media(filename,url,bucket,mime_type,size,description,published,sort_order) VALUES
+      ('taslak.webp','https://example.invalid/taslak.webp','gallery','image/webp',100,'Taslak',false,1),
+      ('yayin.webp','https://example.invalid/yayin.webp','gallery','image/webp',100,'Yayın',true,2);`);
+    await db.exec('SET ROLE anon');
+    try {
+      const result = await db.query<{ filename: string }>('SELECT filename FROM media');
+      expect(result.rows.map(row => row.filename)).toEqual(['yayin.webp']);
+    } finally { await db.exec('RESET ROLE'); }
+  });
   it('Artımlı SQL tekrar çalıştırılabilir ve mevcut adminleri korur', async () => {
     await db.exec(migration);
     await db.exec(cleanupMigration);
+    await db.exec(galleryMigration);
     expect((await db.query('SELECT id FROM profiles WHERE is_admin')).rows).toHaveLength(2);
   });
 });

@@ -173,6 +173,19 @@ Uygulama içi şifre kurtarma ve e-posta gönderme akışı ürün kapsamında d
 | PROFILE-04 | P1 | Profil fotografini degistirin. | Yeni fotograf public sayfada gorunur; eski dosya `profiles` bucket'indan temizlenir. | geçti
 | PROFILE-05 | P1 | Opsiyonel alanlari temizleyip kaydedin. | Bos degerler public sayfada bos blok veya kirik link olusturmaz. | geçti
 
+## 9A. Galeri
+
+| ID | Oncelik | Islem | Beklenen sonuc |
+| --- | --- | --- | --- |
+| GALLERY-01 | P0 | Admin `Galeri` ekranindan JPG, PNG veya WebP fotograf yukleyin. | Yukleme tamamlanir; fotograf kartta ve public `/galeri` sayfasinda net, dogru oranli ve hizli gorunur. |
+| GALLERY-02 | P0 | MP4 veya WebM video yukleyip public galeride acin. | Video yeni sekmeye ya da tarayicinin ham oynaticisina gitmez; ozel oynaticida oynat/duraklat, zaman, ses ve tam ekran kontrolleri calisir. |
+| GALLERY-03 | P0 | Bir medyayi taslak olarak yukleyin, sonra yayin durumunu acip kaydedin. | Taslak public tarafta gorunmez; yayinlandiktan sonraki tek yenilemede gorunur. |
+| GALLERY-04 | P1 | Aciklamayi degistirin ve iki kaydi yukari/asagi tasiyin. | Public aciklama ve sira admin panelindeki son durumla aynidir. |
+| GALLERY-05 | P0 | Desteklenmeyen dosya ve 50 MB'den buyuk video secin. | Yukleme Storage'a baslamadan anlasilir hata mesaji ile reddedilir. |
+| GALLERY-06 | P1 | Fotograf/video filtrelerini, onceki/sonraki dugmelerini ve Escape tusunu deneyin. | Filtre dogru kayitlari gosterir; medya goruntuleyici klavye ve dugmelerle kapanir/gezinir. |
+| GALLERY-07 | P0 | Galeri kaydini silerken once iptal, sonra onay deneyin. | Iptal kaydi korur; onay kaydi ve ona ait Storage dosyalarini kalici olarak siler. |
+| GALLERY-08 | P1 | 360 px mobil gorunumda galeri ve video oynaticiyi kullanin. | Yatay tasma olmaz; medya, aciklama ve kontroller birbirinin ustune binmez. |
+
 ## 10. SEO, Guvenlik ve Veri Gizliligi
 
 | ID | Oncelik | Kontrol | Beklenen sonuc |
@@ -230,6 +243,11 @@ WHERE lower(email) = lower('admin@mail.com');
 SELECT key, type, data, updated_at
 FROM public.site_content
 WHERE key = 'hero';
+
+SELECT filename, mime_type, published, sort_order, size, width, height, duration_seconds
+FROM public.media
+WHERE bucket = 'gallery'
+ORDER BY sort_order DESC, created_at DESC;
 ```
 
 ## 14. Duzeltmeler Sonrasi Ozel Tekrar Testleri
@@ -247,7 +265,7 @@ Asagidaki noktalar son duzeltmelerden sonra ozellikle tekrar kontrol edilmelidir
 2. QA makalesini silin ve public URL'nin 404 verdigini kontrol edin.
 3. Artik makale bagli olmayan QA kategorisini silin.
 4. Gecici non-admin Auth kullanicisini silin.
-5. `posts`, `profiles` ve `general` Storage bucket'larinda testten kalan sahipsiz dosyalari temizleyin.
+5. `posts`, `profiles`, `general` ve `gallery` Storage bucket'larinda testten kalan sahipsiz dosyalari temizleyin.
 6. Hero ve profil alanlarini gercek yayin degerlerine geri getirin.
 7. Son kez `npm run check` calistirin.
 

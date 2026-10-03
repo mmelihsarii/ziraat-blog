@@ -171,11 +171,34 @@ CREATE TABLE IF NOT EXISTS media (
     mime_type TEXT NOT NULL,
     size INTEGER NOT NULL,
     alt TEXT,
+    description TEXT,
+    poster_url TEXT,
+    width INTEGER,
+    height INTEGER,
+    duration_seconds NUMERIC(10, 2),
+    published BOOLEAN NOT NULL DEFAULT false,
+    sort_order INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT media_filename_not_empty CHECK (char_length(filename) > 0),
     CONSTRAINT media_size_positive CHECK (size > 0),
-    CONSTRAINT media_bucket_valid CHECK (bucket IN ('posts', 'profiles', 'general'))
+    CONSTRAINT media_bucket_valid CHECK (bucket IN ('posts', 'profiles', 'general', 'gallery')),
+    CONSTRAINT media_description_length CHECK (description IS NULL OR char_length(description) <= 600),
+    CONSTRAINT media_dimensions_positive CHECK ((width IS NULL OR width > 0) AND (height IS NULL OR height > 0)),
+    CONSTRAINT media_duration_positive CHECK (duration_seconds IS NULL OR duration_seconds >= 0),
+    CONSTRAINT media_sort_order_positive CHECK (sort_order >= 0)
 );
+
+ALTER TABLE media ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE media ADD COLUMN IF NOT EXISTS poster_url TEXT;
+ALTER TABLE media ADD COLUMN IF NOT EXISTS width INTEGER;
+ALTER TABLE media ADD COLUMN IF NOT EXISTS height INTEGER;
+ALTER TABLE media ADD COLUMN IF NOT EXISTS duration_seconds NUMERIC(10, 2);
+ALTER TABLE media ADD COLUMN IF NOT EXISTS published BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE media ADD COLUMN IF NOT EXISTS sort_order INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE media ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+ALTER TABLE media DROP CONSTRAINT IF EXISTS media_bucket_valid;
+ALTER TABLE media ADD CONSTRAINT media_bucket_valid CHECK (bucket IN ('posts', 'profiles', 'general', 'gallery'));
 
 COMMENT ON TABLE media IS 'Media files stored in Supabase Storage';
 COMMENT ON COLUMN media.bucket IS 'Storage bucket name';
@@ -242,6 +265,7 @@ CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_views ON posts(views DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_featured ON posts(featured) WHERE featured = true;
 CREATE INDEX IF NOT EXISTS idx_posts_status_published ON posts(status, published_at DESC) WHERE status = 'published';
+CREATE INDEX IF NOT EXISTS idx_media_gallery_public ON media(sort_order DESC, created_at DESC) WHERE published = true AND bucket = 'gallery';
 
 -- --------------------------------------------------------------------------------------------------------
 -- 4.4 YORUM İNDEKSLERİ
@@ -562,6 +586,12 @@ CREATE TRIGGER trigger_site_content_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS trigger_media_updated_at ON media;
+CREATE TRIGGER trigger_media_updated_at
+    BEFORE UPDATE ON media
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
@@ -788,7 +818,7 @@ DROP POLICY IF EXISTS "media_anon_select" ON media;
 CREATE POLICY "media_anon_select" ON media
     FOR SELECT
     TO anon
-    USING (true);
+    USING (published = true AND bucket = 'gallery');
 
 DROP POLICY IF EXISTS "media_admin_all" ON media;
 CREATE POLICY "media_admin_all" ON media
@@ -869,6 +899,20 @@ VALUES (
     ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/webm']
 )
 ON CONFLICT (id) DO NOTHING;
+
+-- Galeri kovası (optimize görseller ve web uyumlu videolar)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+    'gallery',
+    'gallery',
+    true,
+    52428800, -- 50MB
+    ARRAY['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm']
+)
+ON CONFLICT (id) DO UPDATE SET
+    public = EXCLUDED.public,
+    file_size_limit = EXCLUDED.file_size_limit,
+    allowed_mime_types = EXCLUDED.allowed_mime_types;
 
 -- Profil kovası (herkese açık, yalnız görseller)
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -989,6 +1033,28 @@ CREATE POLICY "general_admin_delete" ON storage.objects
     TO authenticated
     USING (bucket_id = 'general' AND is_admin());
 
+-- Galeri dosyalarını herkes okuyabilir; yazma ve silme yalnız yöneticidedir.
+DROP POLICY IF EXISTS "gallery_anon_select" ON storage.objects;
+CREATE POLICY "gallery_anon_select" ON storage.objects
+    FOR SELECT TO anon
+    USING (bucket_id = 'gallery');
+
+DROP POLICY IF EXISTS "gallery_admin_insert" ON storage.objects;
+CREATE POLICY "gallery_admin_insert" ON storage.objects
+    FOR INSERT TO authenticated
+    WITH CHECK (bucket_id = 'gallery' AND is_admin());
+
+DROP POLICY IF EXISTS "gallery_admin_update" ON storage.objects;
+CREATE POLICY "gallery_admin_update" ON storage.objects
+    FOR UPDATE TO authenticated
+    USING (bucket_id = 'gallery' AND is_admin())
+    WITH CHECK (bucket_id = 'gallery' AND is_admin());
+
+DROP POLICY IF EXISTS "gallery_admin_delete" ON storage.objects;
+CREATE POLICY "gallery_admin_delete" ON storage.objects
+    FOR DELETE TO authenticated
+    USING (bucket_id = 'gallery' AND is_admin());
+
 -- ========================================================================================================
 -- 11. BAŞLANGIÇ VERİSİ (İSTEĞE BAĞLI - GELİŞTİRME/TEST İÇİN)
 -- ========================================================================================================
@@ -1100,13 +1166,13 @@ DECLARE
 BEGIN
     SELECT COUNT(*) INTO bucket_count
     FROM storage.buckets
-    WHERE id IN ('posts', 'profiles', 'general');
+    WHERE id IN ('posts', 'profiles', 'general', 'gallery');
     
-    IF bucket_count != 3 THEN
-        RAISE EXCEPTION 'Migration validation failed: Expected 3 storage buckets, found %', bucket_count;
+    IF bucket_count != 4 THEN
+        RAISE EXCEPTION 'Migration validation failed: Expected 4 storage buckets, found %', bucket_count;
     END IF;
     
-    RAISE NOTICE 'All 3 storage buckets created successfully';
+    RAISE NOTICE 'All 4 storage buckets created successfully';
 END $$;
 
 -- Yeni kurulumlarda da artımlı güvenlik migration'ıyla aynı kuralı uygula.
@@ -1140,7 +1206,7 @@ SELECT
     '8 tables created' as tables,
     '11 functions created' as functions,
     '3 views created' as views,
-    '3 storage buckets created' as storage,
+    '4 storage buckets created' as storage,
     'RLS enabled on all tables' as security,
     'All indexes and triggers active' as performance;
 
@@ -1149,7 +1215,7 @@ SELECT
 -- ========================================================================================================
 /*
 The application schema now contains seven tables, three administrative views,
-three public Storage buckets, admin-role RLS, Turkish-safe slug generation,
+four public Storage buckets, admin-role RLS, Turkish-safe slug generation,
 automatic profile creation and the initial category/hero content.
 
 Kurulumdan sonra Supabase Authentication'da yönetici hesabını oluşturun.

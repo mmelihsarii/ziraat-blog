@@ -166,3 +166,31 @@ export interface UpdateProfileInput {
   twitter?: string;
   linkedin?: string;
 }
+
+export type GalleryMediaType = 'image' | 'video';
+
+export interface GalleryItem {
+  id: string;
+  filename: string;
+  url: string;
+  bucket: string;
+  mime_type: string;
+  media_type: GalleryMediaType;
+  size: number;
+  alt: string | null;
+  description: string | null;
+  poster_url: string | null;
+  width: number | null;
+  height: number | null;
+  duration_seconds: number | null;
+  published: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UpdateGalleryItemInput {
+  id: string;
+  description: string;
+  published: boolean;
+}

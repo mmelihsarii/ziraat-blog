@@ -212,7 +212,15 @@ export interface Database {
           mime_type: string;
           size: number;
           alt: string | null;
+          description: string | null;
+          poster_url: string | null;
+          width: number | null;
+          height: number | null;
+          duration_seconds: number | null;
+          published: boolean;
+          sort_order: number;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -222,7 +230,15 @@ export interface Database {
           mime_type: string;
           size: number;
           alt?: string | null;
+          description?: string | null;
+          poster_url?: string | null;
+          width?: number | null;
+          height?: number | null;
+          duration_seconds?: number | null;
+          published?: boolean;
+          sort_order?: number;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -232,7 +248,15 @@ export interface Database {
           mime_type?: string;
           size?: number;
           alt?: string | null;
+          description?: string | null;
+          poster_url?: string | null;
+          width?: number | null;
+          height?: number | null;
+          duration_seconds?: number | null;
+          published?: boolean;
+          sort_order?: number;
           created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };

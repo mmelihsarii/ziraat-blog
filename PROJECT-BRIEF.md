@@ -53,8 +53,8 @@ Public site -> aynı Supabase verisi -> tek yenilemede güncel içerik
 
 ## Tamamlanma Ölçütleri
 
-- Public: ana sayfa, arşiv, arama, kategori, detay, paylaşım, yorum, puan, profil
-- Admin: giriş/çıkış, dashboard, makale, kategori, yorum, hero, profil
+- Public: ana sayfa, arşiv, arama, kategori, detay, paylaşım, yorum, puan, profil, fotoğraf/video galerisi
+- Admin: giriş/çıkış, dashboard, makale, kategori, yorum, hero, profil ve galeri yönetimi
 - İçerik: rich text, görsel, YouTube, SEO alanları, etiketler, taslak/yayın
 - Teknik: tip kontrolü, lint, production build, dependency audit, desktop/mobile tarayıcı kontrolü
 - Operasyon: tek migration, örnek env, güncel README, dış servis olmadığında yerel hero yedeği
